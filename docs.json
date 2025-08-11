@@ -61,7 +61,10 @@
                         "group": "Recipients",
                         "pages": [
                             "api-reference/endpoint/recipients/create-recipient",
-                            "api-reference/endpoint/recipients/batch-create-recipients"
+                            "api-reference/endpoint/recipients/batch-create-recipients",
+                            "api-reference/endpoint/recipients/retrieve-recipient",
+                            "api-reference/endpoint/recipients/update-recipient",
+                            "api-reference/endpoint/recipients/delete-recipient"
                         ]
                     }
                 ]
