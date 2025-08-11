@@ -1,214 +1,268 @@
 {
-  "openapi": "3.0.3",
-  "info": {
-    "title": "Bodhveda Notifications API",
-    "version": "1.0",
-    "description": "API for sending notifications to recipients or broadcasting to all."
-  },
-  "paths": {
-    "/v1/notifications/send": {
-      "post": {
-        "summary": "Send a notification (direct or broadcast)",
-        "operationId": "sendNotification",
-        "tags": ["Notifications"],
-        "description": "Sends a notification to a specific recipient (direct) or to all recipients (broadcast).\n- **Direct**: `recipient_id` is set. `target` is optional.\n- **Broadcast**: `recipient_id` is null. `target` is **required**.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SendNotificationPayload"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Notification sent successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SendNotificationResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid input",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ]
-      }
-    }
-  },
-  "components": {
-    "securitySchemes": {
-      "BearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "APIKey"
-      }
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Bodhveda Notifications API",
+        "version": "1.0",
+        "description": "API for sending notifications to recipients or broadcasting to all."
     },
-    "schemas": {
-      "SendNotificationPayload": {
-        "type": "object",
-        "properties": {
-          "recipient_id": {
-            "type": "string",
-            "nullable": true,
-            "description": "External ID of the recipient.\n- If null → this is a **broadcast** notification (all recipients).\n- If set → this is a **direct** notification to that recipient."
-          },
-          "target": {
-            "$ref": "#/components/schemas/NotificationTarget"
-          },
-          "payload": {
-            "type": "object",
-            "description": "Arbitrary JSON payload for the notification."
-          }
+    "paths": {
+        "/v1/notifications/send": {
+            "post": {
+                "summary": "Send a notification (direct or broadcast)",
+                "operationId": "sendNotification",
+                "tags": ["Notifications"],
+                "description": "Send a **direct** notification to a specific recipient or send a **broadcast** to all recipients subscribed to a `target`.\n- **Direct**: `recipient_id` is set. `target` is optional.\n- **Broadcast**: `recipient_id` is null. `target` is **required**.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SendNotificationPayload"
+                            }
+                        }
+                    }
+                },
+                "x-codeSamples": [
+                    {
+                        "lang": "curl",
+                        "source": "curl -X POST https://api.bodhveda.com/v1/notifications/send \\\n  -H \"Authorization: Bearer YOUR_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"recipient_id\": \"recipient_123\",\n    \"target\": {\n      \"channel\": \"posts\",\n      \"topic\": \"post_id_123\",\n      \"event\": \"new_comment\"\n    },\n    \"payload\": {\n      \"title\": \"Elon, Zuck and others commented on your post.\",\n      \"post_url\": \"/posts/post_id_123#comments\"\n    }\n  }'"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Notification response",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "Direct notification": {
+                                        "summary": "Direct Notification Response",
+                                        "value": {
+                                            "message": "Direct notification sent successfully to recipient recipient_123.",
+                                            "data": {
+                                                "notification": {
+                                                    "id": 42069,
+                                                    "recipient_id": "recipient_123",
+                                                    "payload": {
+                                                        "title": "Elon, Zuck and others commented on your post.",
+                                                        "post_url": "/posts/post_id_123#comments"
+                                                    },
+                                                    "broadcast_id": null,
+                                                    "target": {
+                                                        "channel": "posts",
+                                                        "topic": "post_id_123",
+                                                        "event": "new_comment"
+                                                    },
+                                                    "seen": false,
+                                                    "read": false,
+                                                    "opened": false,
+                                                    "created_at": "2025-11-07T05:31:56Z",
+                                                    "updated_at": "2025-11-07T05:31:56Z"
+                                                },
+                                                "broadcast": null
+                                            }
+                                        }
+                                    },
+                                    "Broadcast notification": {
+                                        "summary": "Broadcast Notification Response",
+                                        "value": {
+                                            "message": "Broadcast notification sent successfully. It will be delivered to all elligible recipients.",
+                                            "data": {
+                                                "notification": null,
+                                                "broadcast": {
+                                                    "id": 42069,
+                                                    "target": {
+                                                        "channel": "announcements",
+                                                        "topic": "product",
+                                                        "event": "new_feature"
+                                                    },
+                                                    "payload": {
+                                                        "title": "Big News!",
+                                                        "message": "We just launched a new feature."
+                                                    },
+                                                    "created_at": "2025-08-11T20:54:25.039856+05:30",
+                                                    "updated_at": "2025-08-11T20:54:25.039856+05:30"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "Direct notification rejected": {
+                                        "summary": "Rejected Notification Based on Preferences",
+                                        "value": {
+                                            "message": "No notification was sent. Recipient's preferences do not allow delivery.",
+                                            "data": {
+                                                "notification": null,
+                                                "broadcast": null
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuthWithAPIKeyWithFullAcessScope": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "BearerAuthWithAPIKeyWithFullAcessScope": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "APIKey",
+                "description": "Bearer authentication header of the form `Bearer bv_xxxxxxxxx`, where `bv_xxxxxxxxx` is your **API Key** with `Full Access` scope."
+            },
+            "BearerAuthWithAPIKeyWithEitherScope": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "APIKey",
+                "description": "Bearer authentication header of the form `Bearer bv_xxxxxxxxx`, where `bv_xxxxxxxxx` is your **API Key** with `Full Access` or `Recipient Acess` scope."
+            }
         },
-        "required": ["payload"]
-      },
-      "NotificationTarget": {
-        "type": "object",
-        "description": "Destination and categorization details for the notification.",
-        "properties": {
-          "channel": {
-            "type": "string",
-            "description": "Notification channel (e.g., \"email\", \"push\")."
-          },
-          "topic": {
-            "type": "string",
-            "description": "High-level grouping for the notification (e.g., \"billing\")."
-          },
-          "event": {
-            "type": "string",
-            "description": "Specific event name (e.g., \"invoice_due\")."
-          }
-        },
-        "required": ["channel", "topic", "event"]
-      },
-      "SendNotificationResponse": {
-        "type": "object",
-        "description": "Response for send notification API.",
-        "properties": {
-          "message": {
-            "type": "string"
-          },
-          "notification": {
-            "$ref": "#/components/schemas/Notification"
-          },
-          "broadcast": {
-            "$ref": "#/components/schemas/Broadcast"
-          }
+        "schemas": {
+            "SendNotificationPayload": {
+                "type": "object",
+                "properties": {
+                    "recipient_id": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "The `id` of a recipient.\n- If null → this is treated as a **broadcast** notification.\n- If set → this is a **direct** notification to that recipient. \n\n 💡 If no recipient exists with the `recipient_id`, Bodhveda will create a new recipient with that `recipient_id`."
+                    },
+                    "target": {
+                        "$ref": "#/components/schemas/Target"
+                    },
+                    "payload": {
+                        "type": "object",
+                        "description": "Arbitrary JSON payload for the notification."
+                    }
+                },
+                "required": ["payload"]
+            },
+            "Target": {
+                "type": "object",
+                "description": "A **target** is the structure used to describe _who should get a notification_ and _how it should be categorized_.",
+                "properties": {
+                    "channel": {
+                        "type": "string",
+                        "description": "Broad category for a notification (e.g., \"posts\")."
+                    },
+                    "topic": {
+                        "type": "string",
+                        "description": "Subcategory inside the channel (e.g., \"post_id_123\"). \n- `any` and `none` have special meaning. \n- `any` means **all topics under this channel/event**. \n- `none` means **only the base channel/event**. \n- `any` is **not** a valid `topic` when sending a notification, but both are valid for preferences. \n\n A preference with the target `posts:any:new_comment` will match a notification with target `posts:post_id_123:new_comment` but a preference with the target `posts:none:new_comment` will **only** match a notification with target `posts:none:new_comment`."
+                    },
+                    "event": {
+                        "type": "string",
+                        "description": "Event that triggered this notification (e.g., \"new_comment\")."
+                    }
+                },
+                "required": ["channel", "topic", "event"]
+            },
+            "SendNotificationResponse": {
+                "type": "object",
+                "description": "Response for send notification API.",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    },
+                    "notification": {
+                        "$ref": "#/components/schemas/Notification"
+                    },
+                    "broadcast": {
+                        "$ref": "#/components/schemas/Broadcast"
+                    }
+                }
+            },
+            "Notification": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "description": "Unique identifier for the notification."
+                    },
+                    "recipient_id": {
+                        "type": "string",
+                        "description": "Unique identifier for the recipient who received this notification."
+                    },
+                    "payload": {
+                        "type": "object",
+                        "description": "JSON payload sent with the notification."
+                    },
+                    "broadcast_id": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Unique identifier for the broadcast that created this notification. \n It is `null`, if this is a **direct** notification."
+                    },
+                    "target": {
+                        "$ref": "#/components/schemas/Target"
+                    },
+                    "seen": {
+                        "type": "boolean",
+                        "description": "Whether the notification has been seen by the recipient. \n\n 💡 You can update this to `true` or `false` via [mark notifications as seen](/api-reference/endpoint/mark-seen)."
+                    },
+                    "read": {
+                        "type": "boolean",
+                        "description": "Whether the notification has been read by the recipient. \n\n 💡 You can update this to `true` or `false` via [mark notifications as read](/api-reference/endpoint/mark-read)."
+                    },
+                    "opened": {
+                        "type": "boolean",
+                        "description": "Whether the notification has been opened by the recipient. \n\n 💡 You can update this to `true` or `false` via [mark notifications as opened](/api-reference/endpoint/mark-opened)."
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "Broadcast": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "project_id": {
+                        "type": "integer"
+                    },
+                    "payload": {
+                        "type": "object"
+                    },
+                    "channel": {
+                        "type": "string"
+                    },
+                    "topic": {
+                        "type": "string"
+                    },
+                    "event": {
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "ErrorResponse": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "string"
+                    },
+                    "details": {
+                        "type": "string"
+                    }
+                }
+            }
         }
-      },
-      "Notification": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "recipient_id": {
-            "type": "string"
-          },
-          "payload": {
-            "type": "object"
-          },
-          "broadcast_id": {
-            "type": "integer",
-            "nullable": true
-          },
-          "channel": {
-            "type": "string"
-          },
-          "topic": {
-            "type": "string"
-          },
-          "event": {
-            "type": "string"
-          },
-          "seen": {
-            "type": "boolean"
-          },
-          "read": {
-            "type": "boolean"
-          },
-          "opened": {
-            "type": "boolean"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "Broadcast": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "project_id": {
-            "type": "integer"
-          },
-          "payload": {
-            "type": "object"
-          },
-          "channel": {
-            "type": "string"
-          },
-          "topic": {
-            "type": "string"
-          },
-          "event": {
-            "type": "string"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "ErrorResponse": {
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "string"
-          },
-          "details": {
-            "type": "string"
-          }
-        }
-      }
     }
-  }
 }
