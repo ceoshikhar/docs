@@ -53,8 +53,7 @@
                     {
                         "group": "Notifications",
                         "pages": [
-                            "api-reference/endpoint/notifications/send-notification",
-                            "api-reference/endpoint/mark-seen"
+                            "api-reference/endpoint/notifications/send-notification"
                         ]
                     },
                     {
@@ -65,6 +64,12 @@
                             "api-reference/endpoint/recipients/retrieve-recipient",
                             "api-reference/endpoint/recipients/update-recipient",
                             "api-reference/endpoint/recipients/delete-recipient",
+                            {
+                                "group": "Notifications",
+                                "pages": [
+                                    "api-reference/endpoint/recipients/notifications/list-notifications"
+                                ]
+                            },
                             {
                                 "group": "Preferences",
                                 "pages": [

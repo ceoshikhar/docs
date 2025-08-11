@@ -214,7 +214,6 @@
                                     "Batch create result": {
                                         "summary": "Batch Create Recipients Response",
                                         "value": {
-                                            "message": "",
                                             "data": {
                                                 "created": [
                                                     { "id": "recipient_123" }
@@ -275,7 +274,6 @@
                                     "Recipient found": {
                                         "summary": "Recipient Found",
                                         "value": {
-                                            "message": "",
                                             "data": {
                                                 "id": "recipient_123",
                                                 "name": "John Doe",
@@ -467,7 +465,6 @@
                                     "Preferences": {
                                         "summary": "Preferences Response",
                                         "value": {
-                                            "message": "",
                                             "data": {
                                                 "preferences": [
                                                     {
@@ -512,10 +509,10 @@
         },
         "/v1/recipients/{recipient_id}/preferences/targets": {
             "get": {
-                "summary": "Set a recipient’s subscription state for a specific target.",
-                "operationId": "checkRecipientPreference",
+                "summary": "Check recipient's subscription state for a target",
+                "operationId": "checkRecipientTargetSubscription",
                 "tags": ["Preferences"],
-                "description": "Set a recipient’s subscription state for a specific target.",
+                "description": "Check if a recipient is subscribed to a specific target (channel, topic, event).",
                 "parameters": [
                     {
                         "name": "recipient_id",
@@ -548,14 +545,13 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Recipient's preference for the target.",
+                        "description": "Subscription state for the target",
                         "content": {
                             "application/json": {
                                 "examples": {
                                     "Target Subscription State": {
                                         "summary": "Target Subscription State Response",
                                         "value": {
-                                            "message": "",
                                             "data": {
                                                 "target": {
                                                     "channel": "posts",
@@ -635,7 +631,6 @@
                                     "Updated Target Subscription State": {
                                         "summary": "Updated Target Subscription State Response",
                                         "value": {
-                                            "message": "",
                                             "data": {
                                                 "target": {
                                                     "channel": "posts",
@@ -645,6 +640,96 @@
                                                 "state": {
                                                     "subscribed": false,
                                                     "inherited": false
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuthWithAPIKeyWithEitherScope": []
+                    }
+                ]
+            }
+        },
+        "/v1/recipients/{recipient_id}/notifications": {
+            "get": {
+                "summary": "List notifications for a recipient",
+                "operationId": "listRecipientNotifications",
+                "tags": ["Notifications"],
+                "description": "Retrieve a paginated list of notifications for a recipient, ordered by most recent first.",
+                "parameters": [
+                    {
+                        "name": "recipient_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string" },
+                        "description": "The unique identifier of the recipient."
+                    },
+                    {
+                        "name": "before",
+                        "in": "query",
+                        "required": false,
+                        "schema": { "type": "string" },
+                        "description": "Returns results before the specified cursor. Use this to paginate backwards or fetch earlier items in the list."
+                    },
+                    {
+                        "name": "after",
+                        "in": "query",
+                        "required": false,
+                        "schema": { "type": "string" },
+                        "description": "Returns results after the specified cursor. Use this to paginate forwards or fetch newer items in the list."
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10,
+                            "maximum": 100
+                        },
+                        "description": "Maximum number of notifications to return."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of notifications for the recipient.",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "Notifications list": {
+                                        "summary": "Notifications List Response",
+                                        "value": {
+                                            "data": {
+                                                "notifications": [
+                                                    {
+                                                        "id": 42069,
+                                                        "recipient_id": "recipient_123",
+                                                        "payload": {
+                                                            "title": "Elon, Zuck and others commented on your post.",
+                                                            "post_url": "/posts/post_id_123#comments"
+                                                        },
+                                                        "broadcast_id": null,
+                                                        "target": {
+                                                            "channel": "posts",
+                                                            "topic": "post_id_123",
+                                                            "event": "new_comment"
+                                                        },
+                                                        "seen": false,
+                                                        "read": false,
+                                                        "opened": false,
+                                                        "created_at": "2025-11-07T05:31:56Z",
+                                                        "updated_at": "2025-11-07T05:31:56Z"
+                                                    }
+                                                ],
+                                                "cursor": {
+                                                    "before": "42069",
+                                                    "after": "42069"
                                                 }
                                             }
                                         }
