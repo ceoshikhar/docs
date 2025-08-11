@@ -442,6 +442,224 @@
                     }
                 ]
             }
+        },
+        "/v1/recipients/{recipient_id}/preferences": {
+            "get": {
+                "summary": "List preferences for a recipient",
+                "operationId": "listRecipientPreferences",
+                "tags": ["Preferences"],
+                "description": "List of recipient's preferences.",
+                "parameters": [
+                    {
+                        "name": "recipient_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string" },
+                        "description": "The unique identifier of the recipient."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of recipient's preferences.",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "Preferences": {
+                                        "summary": "Preferences Response",
+                                        "value": {
+                                            "message": "",
+                                            "data": {
+                                                "preferences": [
+                                                    {
+                                                        "target": {
+                                                            "channel": "posts",
+                                                            "topic": "any",
+                                                            "event": "new_comment",
+                                                            "label": "Comments on your posts"
+                                                        },
+                                                        "state": {
+                                                            "subscribed": true,
+                                                            "inherited": true
+                                                        }
+                                                    },
+                                                    {
+                                                        "target": {
+                                                            "channel": "announcements",
+                                                            "topic": "none",
+                                                            "event": "new_feature",
+                                                            "label": "Product Announcements"
+                                                        },
+                                                        "state": {
+                                                            "subscribed": false,
+                                                            "inherited": false
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuthWithAPIKeyWithEitherScope": []
+                    }
+                ]
+            }
+        },
+        "/v1/recipients/{recipient_id}/preferences/targets": {
+            "get": {
+                "summary": "Set a recipient’s subscription state for a specific target.",
+                "operationId": "checkRecipientPreference",
+                "tags": ["Preferences"],
+                "description": "Set a recipient’s subscription state for a specific target.",
+                "parameters": [
+                    {
+                        "name": "recipient_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string" },
+                        "description": "The unique identifier of the recipient."
+                    },
+                    {
+                        "name": "channel",
+                        "in": "query",
+                        "required": true,
+                        "schema": { "type": "string" },
+                        "description": "Channel to check."
+                    },
+                    {
+                        "name": "topic",
+                        "in": "query",
+                        "required": true,
+                        "schema": { "type": "string" },
+                        "description": "Topic to check."
+                    },
+                    {
+                        "name": "event",
+                        "in": "query",
+                        "required": true,
+                        "schema": { "type": "string" },
+                        "description": "Event to check."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Recipient's preference for the target.",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "Target Subscription State": {
+                                        "summary": "Target Subscription State Response",
+                                        "value": {
+                                            "message": "",
+                                            "data": {
+                                                "target": {
+                                                    "channel": "posts",
+                                                    "topic": "post_id_123",
+                                                    "event": "new_comment"
+                                                },
+                                                "state": {
+                                                    "subscribed": true,
+                                                    "inherited": false
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuthWithAPIKeyWithEitherScope": []
+                    }
+                ]
+            },
+            "patch": {
+                "summary": "Set recipient's subscription state for a target",
+                "operationId": "setRecipientPreference",
+                "tags": ["Preferences"],
+                "description": "Set a recipient's subscription state for a specific target.",
+                "parameters": [
+                    {
+                        "name": "recipient_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string" },
+                        "description": "The unique identifier of the recipient."
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "target": {
+                                        "$ref": "#/components/schemas/Target"
+                                    },
+                                    "state": {
+                                        "type": "object",
+                                        "properties": {
+                                            "subscribed": {
+                                                "type": "boolean",
+                                                "description": "Whether the recipient is subscribed to this target."
+                                            }
+                                        },
+                                        "required": ["subscribed"]
+                                    }
+                                },
+                                "required": ["target", "state"]
+                            }
+                        }
+                    }
+                },
+                "x-codeSamples": [
+                    {
+                        "lang": "curl",
+                        "source": "curl -X PATCH https://api.bodhveda.com/v1/recipients/recipient_123/preferences/targets \\\n  -H \"Authorization: Bearer bv_xxxxxxxxx\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"target\": {\n      \"channel\": \"posts\",\n      \"topic\": \"post_id_123\",\n      \"event\": \"new_comment\"\n    },\n    \"state\": {\n      \"subscribed\": false\n    }\n  }'"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated subscription state for the target",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "Updated Target Subscription State": {
+                                        "summary": "Updated Target Subscription State Response",
+                                        "value": {
+                                            "message": "",
+                                            "data": {
+                                                "target": {
+                                                    "channel": "posts",
+                                                    "topic": "post_id_123",
+                                                    "event": "new_comment"
+                                                },
+                                                "state": {
+                                                    "subscribed": false,
+                                                    "inherited": false
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuthWithAPIKeyWithEitherScope": []
+                    }
+                ]
+            }
         }
     },
     "components": {

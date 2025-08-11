@@ -64,7 +64,15 @@
                             "api-reference/endpoint/recipients/batch-create-recipients",
                             "api-reference/endpoint/recipients/retrieve-recipient",
                             "api-reference/endpoint/recipients/update-recipient",
-                            "api-reference/endpoint/recipients/delete-recipient"
+                            "api-reference/endpoint/recipients/delete-recipient",
+                            {
+                                "group": "Preferences",
+                                "pages": [
+                                    "api-reference/endpoint/recipients/preferences/list-preferences",
+                                    "api-reference/endpoint/recipients/preferences/set-preference",
+                                    "api-reference/endpoint/recipients/preferences/check-preference"
+                                ]
+                            }
                         ]
                     }
                 ]
