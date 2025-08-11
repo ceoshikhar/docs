@@ -1,11 +1,11 @@
 ---
-title: 'Introduction'
-description: 'Example section for showcasing API endpoints'
+title: "Introduction"
+description: "Example section for showcasing API endpoints"
 ---
 
 <Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
+    If you're not looking to build API reference documentation, you can delete
+    this section by removing the api-reference folder.
 </Note>
 
 ## Welcome
@@ -13,21 +13,105 @@ description: 'Example section for showcasing API endpoints'
 There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
 
 <Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
+    title="Plant Store Endpoints"
+    icon="leaf"
+    href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
 >
-  View the OpenAPI specification file
+    View the OpenAPI specification file
 </Card>
+
+## Base URL
+
+```
+https://api.bodhveda.com
+```
+
+-   All endpoints in this documentation are relative to the `/v1` path.
+-   For testing, a sandbox or staging environment may be available upon request.
 
 ## Authentication
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+All requests require the `Authorization` header with a Bearer token:
+
+```
+Authorization: Bearer YOUR_API_KEY
+```
+
+Replace `YOUR_API_KEY` with your actual API key.
+
+### API Key Scopes
+
+There are 2 scopes for an API KEY:
+
+-   **full** – Full access to all project-level APIs. Use only on the **server side**.
+-   **recipient** – Limited-scope API keys intended for **client-side/browser** use. These allow a recipient to **fetch and manage only their own notifications and preferences**.
+
+> ⚠️ **Security Warning:**  
+> If your `recipient_id` values are predictable (e.g., auto-incrementing integers), you **should not** expose `recipient`-scoped API keys on the frontend.  
+> Instead, route requests through your own backend to ensure recipient access is properly scoped and protected.
+
+### Authentication Errors
+
+-   If the API key is missing or invalid, you will receive a `401 Unauthorized` response.
+-   If the API key does not have sufficient permissions, you will receive a `403 Forbidden` response.
+
+## Response Structure
+
+All responses follow this structure:
 
 ```json
-"security": [
-  {
-    "bearerAuth": []
-  }
-]
+{
+    "status": "success", // or "error"
+    "status_code": 200,
+    "message": "Human readable message",
+    "errors": [], // array of error objects, if any
+    "data": {} // or [ ] response data, if any
+}
 ```
+
+#### Error Object
+
+```json
+{
+    "message": "Short error message",
+    "description": "Detailed technical description",
+    "property_path": "field_name",
+    "invalid_value": "the value that caused the error"
+}
+```
+
+#### Example Error Response
+
+```json
+{
+    "status": "error",
+    "status_code": 400,
+    "message": "Invalid request payload",
+    "errors": [
+        {
+            "message": "Recipient ID is required",
+            "description": "Recipient ID cannot be empty",
+            "property_path": "recipient_id",
+            "invalid_value": ""
+        }
+    ]
+}
+```
+
+## Rate Limiting
+
+-   The API enforces rate limits to prevent abuse.
+-   If you exceed the allowed rate, you will receive a `429 Too Many Requests` response.
+-   Standard limit: 100 requests per minute for a project (subject to change).
+
+## HTTP Status Codes
+
+-   `200 OK` – Successful GET/PUT/PATCH/DELETE
+-   `201 Created` – Successful POST (resource created)
+-   `400 Bad Request` – Invalid input or malformed request
+-   `401 Unauthorized` – Missing or invalid API key
+-   `403 Forbidden` – Insufficient permissions
+-   `404 Not Found` – Resource does not exist
+-   `409 Conflict` – Resource already exists
+-   `429 Too Many Requests` – Rate limit exceeded
+-   `500 Internal Server Error` – Unexpected server error

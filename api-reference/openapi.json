@@ -6,7 +6,7 @@
         "description": "API for sending notifications to recipients or broadcasting to all."
     },
     "paths": {
-        "/v1/notifications/send": {
+        "/notifications/send": {
             "post": {
                 "summary": "Send a notification (direct or broadcast)",
                 "operationId": "sendNotification",
@@ -25,7 +25,7 @@
                 "x-codeSamples": [
                     {
                         "lang": "curl",
-                        "source": "curl -X POST https://api.bodhveda.com/v1/notifications/send \\\n  -H \"Authorization: Bearer bv_xxxxxxxxx\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"recipient_id\": \"recipient_123\",\n    \"target\": {\n      \"channel\": \"posts\",\n      \"topic\": \"post_id_123\",\n      \"event\": \"new_comment\"\n    },\n    \"payload\": {\n      \"title\": \"Elon, Zuck and others commented on your post.\",\n      \"post_url\": \"/posts/post_id_123#comments\"\n    }\n  }'"
+                        "source": "curl -X POST https://api.bodhveda.com/notifications/send \\\n  -H \"Authorization: Bearer bv_xxxxxxxxx\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"recipient_id\": \"recipient_123\",\n    \"target\": {\n      \"channel\": \"posts\",\n      \"topic\": \"post_id_123\",\n      \"event\": \"new_comment\"\n    },\n    \"payload\": {\n      \"title\": \"Elon, Zuck and others commented on your post.\",\n      \"post_url\": \"/posts/post_id_123#comments\"\n    }\n  }'"
                     }
                 ],
                 "responses": {
@@ -107,7 +107,7 @@
                 ]
             }
         },
-        "/v1/recipients": {
+        "/recipients": {
             "post": {
                 "summary": "Create a recipient",
                 "operationId": "createRecipient",
@@ -126,7 +126,7 @@
                 "x-codeSamples": [
                     {
                         "lang": "curl",
-                        "source": "curl -X POST https://api.bodhveda.com/v1/recipients \\\n  -H \"Authorization: Bearer bv_xxxxxxxxx\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"id\": \"recipient_123\",\n    \"name\": \"Alice Johnson\"\n  }'"
+                        "source": "curl -X POST https://api.bodhveda.com/recipients \\\n  -H \"Authorization: Bearer bv_xxxxxxxxx\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"id\": \"recipient_123\",\n    \"name\": \"Alice Johnson\"\n  }'"
                     }
                 ],
                 "responses": {
@@ -174,7 +174,7 @@
                 ]
             }
         },
-        "/v1/recipients/batch": {
+        "/recipients/batch": {
             "post": {
                 "summary": "Create up to 100 recipients at once.",
                 "operationId": "batchCreateRecipients",
@@ -202,7 +202,7 @@
                 "x-codeSamples": [
                     {
                         "lang": "curl",
-                        "source": "curl -X POST https://api.bodhveda.com/v1/recipients/batch \\\n  -H \"Authorization: Bearer bv_xxxxxxxxx\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"recipients\": [\n      { \"id\": \"recipient_123\", \"name\": \"Alice Johnson\" },\n      { \"id\": \"recipient_456\", \"name\": \"Bob Smith\" },\n      { \"name\": \"Bob Smith\" }    ]\n  }'"
+                        "source": "curl -X POST https://api.bodhveda.com/recipients/batch \\\n  -H \"Authorization: Bearer bv_xxxxxxxxx\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"recipients\": [\n      { \"id\": \"recipient_123\", \"name\": \"Alice Johnson\" },\n      { \"id\": \"recipient_456\", \"name\": \"Bob Smith\" },\n      { \"name\": \"Bob Smith\" }    ]\n  }'"
                     }
                 ],
                 "responses": {
@@ -250,7 +250,7 @@
                 ]
             }
         },
-        "/v1/recipients/{recipient_id}": {
+        "/recipients/{recipient_id}": {
             "get": {
                 "summary": "Retrieve a recipient.",
                 "operationId": "getRecipient",
@@ -325,7 +325,7 @@
                 "x-codeSamples": [
                     {
                         "lang": "curl",
-                        "source": "curl -X PATCH https://api.bodhveda.com/v1/recipients/recipient_123 \\\n  -H \"Authorization: Bearer bv_xxxxxxxxx\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"name\": \"Elon Musk\"\n  }'"
+                        "source": "curl -X PATCH https://api.bodhveda.com/recipients/recipient_123 \\\n  -H \"Authorization: Bearer bv_xxxxxxxxx\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"name\": \"Elon Musk\"\n  }'"
                     }
                 ],
                 "requestBody": {
@@ -441,7 +441,7 @@
                 ]
             }
         },
-        "/v1/recipients/{recipient_id}/preferences": {
+        "/recipients/{recipient_id}/preferences": {
             "get": {
                 "summary": "List preferences for a recipient",
                 "operationId": "listRecipientPreferences",
@@ -505,9 +505,88 @@
                         "BearerAuthWithAPIKeyWithEitherScope": []
                     }
                 ]
+            },
+            "patch": {
+                "summary": "Set recipient's subscription state for a target",
+                "operationId": "setRecipientPreference",
+                "tags": ["Preferences"],
+                "description": "Set a recipient's subscription state for a specific target.",
+                "parameters": [
+                    {
+                        "name": "recipient_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string" },
+                        "description": "The unique identifier of the recipient."
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "target": {
+                                        "$ref": "#/components/schemas/Target"
+                                    },
+                                    "state": {
+                                        "type": "object",
+                                        "properties": {
+                                            "subscribed": {
+                                                "type": "boolean",
+                                                "description": "Whether the recipient is subscribed to this target."
+                                            }
+                                        },
+                                        "required": ["subscribed"]
+                                    }
+                                },
+                                "required": ["target", "state"]
+                            }
+                        }
+                    }
+                },
+                "x-codeSamples": [
+                    {
+                        "lang": "curl",
+                        "source": "curl -X PATCH https://api.bodhveda.com/recipients/recipient_123/preferences \\\n  -H \"Authorization: Bearer bv_xxxxxxxxx\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"target\": {\n      \"channel\": \"posts\",\n      \"topic\": \"post_id_123\",\n      \"event\": \"new_comment\"\n    },\n    \"state\": {\n      \"subscribed\": false\n    }\n  }'"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated subscription state for the target",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "Updated Target Subscription State": {
+                                        "summary": "Updated Target Subscription State Response",
+                                        "value": {
+                                            "data": {
+                                                "target": {
+                                                    "channel": "posts",
+                                                    "topic": "post_id_123",
+                                                    "event": "new_comment"
+                                                },
+                                                "state": {
+                                                    "subscribed": false,
+                                                    "inherited": false
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuthWithAPIKeyWithEitherScope": []
+                    }
+                ]
             }
         },
-        "/v1/recipients/{recipient_id}/preferences/targets": {
+        "/recipients/{recipient_id}/preferences/check": {
             "get": {
                 "summary": "Check recipient's subscription state for a target",
                 "operationId": "checkRecipientTargetSubscription",
@@ -575,88 +654,9 @@
                         "BearerAuthWithAPIKeyWithEitherScope": []
                     }
                 ]
-            },
-            "patch": {
-                "summary": "Set recipient's subscription state for a target",
-                "operationId": "setRecipientPreference",
-                "tags": ["Preferences"],
-                "description": "Set a recipient's subscription state for a specific target.",
-                "parameters": [
-                    {
-                        "name": "recipient_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": { "type": "string" },
-                        "description": "The unique identifier of the recipient."
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "target": {
-                                        "$ref": "#/components/schemas/Target"
-                                    },
-                                    "state": {
-                                        "type": "object",
-                                        "properties": {
-                                            "subscribed": {
-                                                "type": "boolean",
-                                                "description": "Whether the recipient is subscribed to this target."
-                                            }
-                                        },
-                                        "required": ["subscribed"]
-                                    }
-                                },
-                                "required": ["target", "state"]
-                            }
-                        }
-                    }
-                },
-                "x-codeSamples": [
-                    {
-                        "lang": "curl",
-                        "source": "curl -X PATCH https://api.bodhveda.com/v1/recipients/recipient_123/preferences/targets \\\n  -H \"Authorization: Bearer bv_xxxxxxxxx\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"target\": {\n      \"channel\": \"posts\",\n      \"topic\": \"post_id_123\",\n      \"event\": \"new_comment\"\n    },\n    \"state\": {\n      \"subscribed\": false\n    }\n  }'"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Updated subscription state for the target",
-                        "content": {
-                            "application/json": {
-                                "examples": {
-                                    "Updated Target Subscription State": {
-                                        "summary": "Updated Target Subscription State Response",
-                                        "value": {
-                                            "data": {
-                                                "target": {
-                                                    "channel": "posts",
-                                                    "topic": "post_id_123",
-                                                    "event": "new_comment"
-                                                },
-                                                "state": {
-                                                    "subscribed": false,
-                                                    "inherited": false
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "BearerAuthWithAPIKeyWithEitherScope": []
-                    }
-                ]
             }
         },
-        "/v1/recipients/{recipient_id}/notifications": {
+        "/recipients/{recipient_id}/notifications": {
             "get": {
                 "summary": "List notifications for a recipient",
                 "operationId": "listRecipientNotifications",
