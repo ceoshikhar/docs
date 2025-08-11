@@ -11,7 +11,7 @@
                 "summary": "Send a notification (direct or broadcast)",
                 "operationId": "sendNotification",
                 "tags": ["Notifications"],
-                "description": "Send a **direct** notification to a specific recipient or send a **broadcast** to all recipients subscribed to a `target`.\n- **Direct**: `recipient_id` is set. `target` is optional.\n- **Broadcast**: `recipient_id` is null. `target` is **required**.",
+                "description": "Start sending notifications through Bodhveda API.",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -25,7 +25,7 @@
                 "x-codeSamples": [
                     {
                         "lang": "curl",
-                        "source": "curl -X POST https://api.bodhveda.com/v1/notifications/send \\\n  -H \"Authorization: Bearer YOUR_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"recipient_id\": \"recipient_123\",\n    \"target\": {\n      \"channel\": \"posts\",\n      \"topic\": \"post_id_123\",\n      \"event\": \"new_comment\"\n    },\n    \"payload\": {\n      \"title\": \"Elon, Zuck and others commented on your post.\",\n      \"post_url\": \"/posts/post_id_123#comments\"\n    }\n  }'"
+                        "source": "curl -X POST https://api.bodhveda.com/v1/notifications/send \\\n  -H \"Authorization: Bearer bv_xxxxxxxxx\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"recipient_id\": \"recipient_123\",\n    \"target\": {\n      \"channel\": \"posts\",\n      \"topic\": \"post_id_123\",\n      \"event\": \"new_comment\"\n    },\n    \"payload\": {\n      \"title\": \"Elon, Zuck and others commented on your post.\",\n      \"post_url\": \"/posts/post_id_123#comments\"\n    }\n  }'"
                     }
                 ],
                 "responses": {
@@ -92,6 +92,150 @@
                                             "data": {
                                                 "notification": null,
                                                 "broadcast": null
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuthWithAPIKeyWithFullAcessScope": []
+                    }
+                ]
+            }
+        },
+        "/v1/recipients": {
+            "post": {
+                "summary": "Create a recipient",
+                "operationId": "createRecipient",
+                "tags": ["Recipients"],
+                "description": "Create a new recipient.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateRecipientPayload"
+                            }
+                        }
+                    }
+                },
+                "x-codeSamples": [
+                    {
+                        "lang": "curl",
+                        "source": "curl -X POST https://api.bodhveda.com/v1/recipients \\\n  -H \"Authorization: Bearer bv_xxxxxxxxx\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"id\": \"recipient_123\",\n    \"name\": \"Alice Johnson\"\n  }'"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Recipient created successfully",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "Recipient created": {
+                                        "summary": "Recipient Created Response",
+                                        "value": {
+                                            "message": "Recipient created",
+                                            "data": {
+                                                "id": "recipient_123",
+                                                "name": "John Doe",
+                                                "created_at": "2025-11-07T05:31:56Z",
+                                                "updated_at": "2025-11-07T05:31:56Z"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Recipient already exists",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "Conflict": {
+                                        "summary": "Recipient Already Exists",
+                                        "value": {
+                                            "message": "Recipient already exists"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuthWithAPIKeyWithFullAcessScope": []
+                    }
+                ]
+            }
+        },
+        "/v1/recipients/batch": {
+            "post": {
+                "summary": "Create up to 100 recipients at once.",
+                "operationId": "batchCreateRecipients",
+                "tags": ["Recipients"],
+                "description": "Create up to 100 recipients at once.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "recipients": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/CreateRecipientPayload"
+                                        }
+                                    }
+                                },
+                                "required": ["recipients"]
+                            }
+                        }
+                    }
+                },
+                "x-codeSamples": [
+                    {
+                        "lang": "curl",
+                        "source": "curl -X POST https://api.bodhveda.com/v1/recipients/batch \\\n  -H \"Authorization: Bearer bv_xxxxxxxxx\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"recipients\": [\n      { \"id\": \"recipient_123\", \"name\": \"Alice Johnson\" },\n      { \"id\": \"recipient_456\", \"name\": \"Bob Smith\" },\n      { \"name\": \"Bob Smith\" }    ]\n  }'"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Batch create recipients result",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "Batch create result": {
+                                        "summary": "Batch Create Recipients Response",
+                                        "value": {
+                                            "message": "",
+                                            "data": {
+                                                "created": [
+                                                    { "id": "recipient_123" }
+                                                ],
+                                                "updated": [
+                                                    { "id": "recipient_456" }
+                                                ],
+                                                "failed": [
+                                                    {
+                                                        "id": "",
+                                                        "batch_index": 2,
+                                                        "errors": [
+                                                            {
+                                                                "message": "ID is required",
+                                                                "description": "ID cannot be empty",
+                                                                "property_path": "id",
+                                                                "invalid_value": ""
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
                                             }
                                         }
                                     }
@@ -262,6 +406,20 @@
                         "type": "string"
                     }
                 }
+            },
+            "CreateRecipientPayload": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Unique identifier from your system. \n\n This cannot be changed after creation. So use a stable identifier that will not change over time."
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Name of the recipient."
+                    }
+                },
+                "required": ["id"]
             }
         }
     }
