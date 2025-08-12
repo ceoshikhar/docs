@@ -1,4 +1,6 @@
 {
+    "$schema": "https://mintlify.com/docs.json",
+    "theme": "mint",
     "name": "Bodhveda",
     "colors": {
         "primary": "#5A86C3",
