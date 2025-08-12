@@ -53,13 +53,16 @@
                             "api-reference/endpoint/recipients/update-recipient",
                             "api-reference/endpoint/recipients/delete-recipient",
                             {
-                                "group": "Recipient's Notifications",
+                                "group": "Notifications",
                                 "pages": [
-                                    "api-reference/endpoint/recipients/notifications/list-notifications"
+                                    "api-reference/endpoint/recipients/notifications/list-notifications",
+                                    "api-reference/endpoint/recipients/notifications/unread-count",
+                                    "api-reference/endpoint/recipients/notifications/mark-state",
+                                    "api-reference/endpoint/recipients/notifications/delete-bulk"
                                 ]
                             },
                             {
-                                "group": "Recipient's Preferences",
+                                "group": "Preferences",
                                 "pages": [
                                     "api-reference/endpoint/recipients/preferences/list-preferences",
                                     "api-reference/endpoint/recipients/preferences/set-preference",
@@ -107,7 +110,7 @@
     "footer": {
         "socials": {
             "discord": "https://discord.gg/Wg9ebJSAAG",
-            "github": "https://github.com/MudgalLabs",
+            "github": "https://github.com/MudgalLabs/bodhveda",
             "linkedin": "https://www.linkedin.com/company/mudgallabs"
         }
     }

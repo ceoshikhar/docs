@@ -13,3 +13,11 @@ Notifications include a payload (custom data) and are categorized by their targe
 A direct notification will always be delivered to the recipient unless the recipient has unsubscribed that target.
 
 A broadcast notification will only be delivered to the recipients who are subscribed to the target.
+
+#### How does Bodhveda determine if a recipient should receive a broadcast notification or not?
+
+Let's assume a broadcast was sent for a new comment that was made on post with id `12345`. The target used for this broadcast is `posts:12345:new_comment`.
+
+Bodhveda will lookup recipients who have subscribed to this target via either `posts:12345:new_comment` or via `posts:any:new_comment` target.
+
+`any` has special behaviour in Bodhveda. Learn more about [targets](/docs/concepts/targets) and [preferences](/docs/concepts/preferences).

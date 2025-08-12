@@ -1,0 +1,14 @@
+---
+title: "Delete notifications"
+openapi: "DELETE /recipients/{recipient_id}/notifications"
+---
+
+Delete one or more notifications for a recipient.
+
+-   If `ids` is omitted, **all notifications** for that recipient will be deleted.
+
+```json
+{
+    "ids": ["notif_123", "notif_456"]
+}
+```

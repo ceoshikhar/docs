@@ -744,6 +744,181 @@
                         "BearerAuthWithAPIKeyWithEitherScope": []
                     }
                 ]
+            },
+            "patch": {
+                "summary": "Bulk update notifications state",
+                "description": "Updates the state of one or more notifications for the specified recipient.",
+                "parameters": [
+                    {
+                        "name": "recipient_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string" },
+                        "description": "Unique external identifier for the recipient."
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "ids": {
+                                        "type": "array",
+                                        "description": "Array of notification IDs to update. If omitted, applies to all.",
+                                        "items": { "type": "string" }
+                                    },
+                                    "state": {
+                                        "type": "object",
+                                        "description": "The notification state to update.",
+                                        "properties": {
+                                            "read": {
+                                                "type": "boolean",
+                                                "description": "Whether the notification is marked as read."
+                                            },
+                                            "opened": {
+                                                "type": "boolean",
+                                                "description": "Whether the notification is marked as opened."
+                                            }
+                                        },
+                                        "example": { "read": true }
+                                    }
+                                },
+                                "required": ["state"]
+                            },
+                            "example": {
+                                "ids": ["notif_123", "notif_456"],
+                                "state": { "read": true }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated notifications",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "updated_count": {
+                                            "type": "integer",
+                                            "description": "Number of notifications updated."
+                                        }
+                                    },
+                                    "example": { "updated_count": 2 }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete notifications",
+                "description": "Deletes one or more notifications for the specified recipient.",
+                "parameters": [
+                    {
+                        "name": "recipient_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string" },
+                        "description": "Unique external identifier for the recipient."
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "ids": {
+                                        "type": "array",
+                                        "description": "Array of notification IDs to delete. If omitted, all will be deleted.",
+                                        "items": { "type": "string" }
+                                    }
+                                }
+                            },
+                            "example": { "ids": ["notif_123", "notif_456"] }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted notifications",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "deleted_count": {
+                                            "type": "integer",
+                                            "description": "Number of notifications deleted."
+                                        }
+                                    },
+                                    "example": { "deleted_count": 2 }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/recipients/{recipient_id}/notifications/unread-count": {
+            "get": {
+                "summary": "Get unread notification count for a recipient",
+                "operationId": "getUnreadNotificationCount",
+                "tags": ["Notifications"],
+                "description": "Returns the number of unread notifications for a recipient.",
+                "parameters": [
+                    {
+                        "name": "recipient_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string" },
+                        "description": "The unique identifier of the recipient."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Unread notification count for the recipient.",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "Unread count": {
+                                        "summary": "Unread Notification Count",
+                                        "value": {
+                                            "data": {
+                                                "unread_count": 5
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Recipient not found",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "Not found": {
+                                        "summary": "Recipient Not Found",
+                                        "value": {
+                                            "message": "Recipient not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuthWithAPIKeyWithEitherScope": []
+                    }
+                ]
             }
         }
     },
