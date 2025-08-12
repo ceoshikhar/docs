@@ -1,7 +1,5 @@
 {
-    "$schema": "https://mintlify.com/docs.json",
-    "theme": "mint",
-    "name": "Mint Starter Kit",
+    "name": "Bodhveda",
     "colors": {
         "primary": "#5A86C3",
         "light": "#7CA6D8",
@@ -57,8 +55,8 @@
                                 "pages": [
                                     "api-reference/endpoint/recipients/notifications/list-notifications",
                                     "api-reference/endpoint/recipients/notifications/unread-count",
-                                    "api-reference/endpoint/recipients/notifications/mark-state",
-                                    "api-reference/endpoint/recipients/notifications/delete-bulk"
+                                    "api-reference/endpoint/recipients/notifications/update-state",
+                                    "api-reference/endpoint/recipients/notifications/delete"
                                 ]
                             },
                             {

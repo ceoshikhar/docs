@@ -746,7 +746,7 @@
                 ]
             },
             "patch": {
-                "summary": "Bulk update notifications state",
+                "summary": "Update notifications state",
                 "description": "Updates the state of one or more notifications for the specified recipient.",
                 "parameters": [
                     {
@@ -771,7 +771,7 @@
                                     },
                                     "state": {
                                         "type": "object",
-                                        "description": "The notification state to update.",
+                                        "description": "The notification state to update. \n- You can set one or multiple state fields in the same request. \n- Fields left out of `state` will remain unchanged.",
                                         "properties": {
                                             "read": {
                                                 "type": "boolean",
@@ -812,7 +812,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "BearerAuthWithAPIKeyWithFullAcessScope": []
+                    }
+                ]
             },
             "delete": {
                 "summary": "Delete notifications",
@@ -862,7 +867,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "BearerAuthWithAPIKeyWithFullAcessScope": []
+                    }
+                ]
             }
         },
         "/recipients/{recipient_id}/notifications/unread-count": {
