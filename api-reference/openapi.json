@@ -753,13 +753,13 @@
                 "type": "http",
                 "scheme": "bearer",
                 "bearerFormat": "APIKey",
-                "description": "Bearer authentication header of the form `Bearer bv_xxxxxxxxx`, where `bv_xxxxxxxxx` is your **API Key** with `Full Access` scope."
+                "description": "Bearer authentication header of the form `Bearer bv_xxxxxxxxx`, where `bv_xxxxxxxxx` is your **API Key** with `Full access` scope."
             },
             "BearerAuthWithAPIKeyWithEitherScope": {
                 "type": "http",
                 "scheme": "bearer",
                 "bearerFormat": "APIKey",
-                "description": "Bearer authentication header of the form `Bearer bv_xxxxxxxxx`, where `bv_xxxxxxxxx` is your **API Key** with `Full Access` or `Recipient Acess` scope."
+                "description": "Bearer authentication header of the form `Bearer bv_xxxxxxxxx`, where `bv_xxxxxxxxx` is your **API Key** with `Full access` or `Recipient acess` scope."
             }
         },
         "schemas": {

@@ -3,9 +3,9 @@
     "theme": "mint",
     "name": "Mint Starter Kit",
     "colors": {
-        "primary": "#5590E6",
-        "light": "#5590E6",
-        "dark": "#3D57A2"
+        "primary": "#5A86C3",
+        "light": "#7CA6D8",
+        "dark": "#3E5D94"
     },
     "favicon": "/favicon.ico",
     "navigation": {
@@ -14,17 +14,17 @@
                 "tab": "Documentation",
                 "groups": [
                     {
-                        "group": "Getting started",
+                        "group": "Documentation",
                         "pages": [
                             "docs/introduction",
                             "docs/quickstart",
                             {
                                 "group": "Concepts",
                                 "pages": [
-                                    "docs/concepts/targets",
                                     "docs/concepts/recipients",
-                                    "docs/concepts/notifications",
-                                    "docs/concepts/preferences"
+                                    "docs/concepts/targets",
+                                    "docs/concepts/preferences",
+                                    "docs/concepts/notifications"
                                 ]
                             }
                         ]
@@ -32,10 +32,10 @@
                 ]
             },
             {
-                "tab": "API reference",
+                "tab": "API Reference",
                 "groups": [
                     {
-                        "group": "API documentation",
+                        "group": "API Reference",
                         "pages": ["api-reference/introduction"]
                     },
                     {
@@ -53,13 +53,13 @@
                             "api-reference/endpoint/recipients/update-recipient",
                             "api-reference/endpoint/recipients/delete-recipient",
                             {
-                                "group": "Notifications",
+                                "group": "Recipient's Notifications",
                                 "pages": [
                                     "api-reference/endpoint/recipients/notifications/list-notifications"
                                 ]
                             },
                             {
-                                "group": "Preferences",
+                                "group": "Recipient's Preferences",
                                 "pages": [
                                     "api-reference/endpoint/recipients/preferences/list-preferences",
                                     "api-reference/endpoint/recipients/preferences/set-preference",
@@ -106,9 +106,9 @@
     },
     "footer": {
         "socials": {
-            "x": "https://x.com/mintlify",
-            "github": "https://github.com/mintlify",
-            "linkedin": "https://linkedin.com/company/mintlify"
+            "discord": "https://discord.gg/Wg9ebJSAAG",
+            "github": "https://github.com/MudgalLabs",
+            "linkedin": "https://www.linkedin.com/company/mudgallabs"
         }
     }
 }

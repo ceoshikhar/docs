@@ -1,80 +1,119 @@
 ---
 title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+description: "Send your first notification in minutes using Bodhveda API or Console."
 ---
 
-## Get started in three steps
+## Prerequisites
 
-Get your documentation site running locally and make your first customization.
+To follow this guide with the API, you’ll need to:
 
-### Step 1: Set up your local environment
+-   Go to [Bodhveda Console](https://console.bodhveda.com).
+-   Create a **new project**.
+-   Click on **API Keys** in the sidebar.
+-   Click on **Create API Key** and generate an API key with `Full access` scope.
 
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
+## Send direct notification with API
 
-### Step 2: Deploy your changes
+Use the [send notification](/api-reference/endpoint/notifications/send-notification) API to send a direct notification to a [recipient](/docs/concepts/recipients). If the recipient doesn't exist, Bodhveda creates it automatically when sending a direct notification.
 
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
+```bash
+curl -X POST https://api.bodhveda.com/notifications/send \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "to": { "recipient_id": "recipient_123" },
+    "payload": { "title": "Welcome!", "message": "Thanks for joining." }
+  }'
+```
 
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
+Then you can use the [list recipient's notifications](/api-reference/endpoint/recipients/notifications/list-notifications) API and you will see the notification you just sent earlier.
 
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
+```bash
+curl -X GET "https://api.bodhveda.com/recipients/recipient_123/notifications" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
 
-### Step 3: Go live
+```json
+[
+    {
+        "id": 42069,
+        "recipient_id": "recipient_123",
+        "payload": {
+            "title": "Welcome!",
+            "message": "Thanks for joining."
+        }
+        // ... other fields.
+    }
+]
+```
 
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
+## Send broadcast notification with API
 
-## Next steps
+Broadcast to multiple recipients. This requires some setup:
 
-Now that you have your docs running, explore these key features:
+-   At least one [recipient](/docs/concepts/recipients) must exist.
+-   At least one project [preference](/docs/concepts/preferences) must exist.
 
-<CardGroup cols={2}>
+##### **Create a recipient**
 
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
+Use [create recipient](/api-reference/endpoint/recipients/create-recipient) API to create a recipient in your project.
 
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
+```bash
+curl -X POST https://api.bodhveda.com/recipients \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"recipient_id": "user@example.com", "name": "Jane Doe"}'
+```
 
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
+##### **Create a project preference**
 
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
+Before broadcasting, you must add at least one project preference to define a target (channel, topic, event):
 
-</CardGroup>
+1. Go to [Bodhveda Console](https://console.bodhveda.com).
+2. Click on **Preferences** in the sidebar.
+3. Click on **Create Preference**.
+4. Define a target by mentioning the channel, topic, and event, give it a label, and set default to enabled.
+5. Save the preference.
+
+This way all recipients are by default subscribed to this target in your project.
+
+##### **Send broadcast notification**
+
+Use the [send notification](/api-reference/endpoint/notifications/send-notification) API to send a broadcast notification to a [target](/docs/concepts/target) that was used to create the project preference.
+
+```bash
+curl -X POST https://api.bodhveda.com/notifications/send \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "to": { "channel": "announcements", "topic": "product", "event": "new_feature" },
+    "payload": { "title": "Big News!", "message": "We just launched a new feature." }
+  }'
+```
 
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+    No <code>recipient_id</code> makes this notification turn into a broadcast.
+    All recipients subscribed to this target will receive this notification.
 </Note>
+
+## Send notification from Console
+
+You can also send notifications from the [Bodhveda Console](https://console.bodhveda.com):
+
+1. Go to **Notifications** tab.
+2. Click on **Send Notification** to send a direct notification to a recipient or a broadcast to subscribed recipients.
+
+##### **Next Steps**
+
+<Columns cols={2}>
+    <Card
+        title="API Reference"
+        icon="terminal"
+        href="/api-reference/introduction"
+    >
+        Explore the API in depth.
+    </Card>
+    <Card title="Concepts" icon="book" href="/docs/concepts/introduction">
+        Explore concepts that make up Bodhveda.
+    </Card>
+</Columns>

@@ -1,24 +1,7 @@
 ---
 title: "Introduction"
-description: "Example section for showcasing API endpoints"
+description: "Send notifications, manage recipients, their notifications and preferences."
 ---
-
-<Note>
-    If you're not looking to build API reference documentation, you can delete
-    this section by removing the api-reference folder.
-</Note>
-
-## Welcome
-
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
-
-<Card
-    title="Plant Store Endpoints"
-    icon="leaf"
-    href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-    View the OpenAPI specification file
-</Card>
 
 ## Base URL
 
@@ -26,8 +9,7 @@ There are two ways to build API documentation: [OpenAPI](https://mintlify.com/do
 https://api.bodhveda.com
 ```
 
--   All endpoints in this documentation are relative to the `/v1` path.
--   For testing, a sandbox or staging environment may be available upon request.
+All endpoints in this documentation are prefixed with `https://api.bodhveda.com`.
 
 ## Authentication
 
@@ -37,17 +19,17 @@ All requests require the `Authorization` header with a Bearer token:
 Authorization: Bearer YOUR_API_KEY
 ```
 
-Replace `YOUR_API_KEY` with your actual API key.
+Replace `YOUR_API_KEY` with your actual API key that looks like `bv_xxxxxxxxx`.
 
 ### API Key Scopes
 
 There are 2 scopes for an API KEY:
 
--   **full** – Full access to all project-level APIs. Use only on the **server side**.
--   **recipient** – Limited-scope API keys intended for **client-side/browser** use. These allow a recipient to **fetch and manage only their own notifications and preferences**.
+-   **Full access** – All APIs are accessible with this scope. Use only on the **server side**.
+-   **Recipient access** – All the recipient's API are accessible with this scope. Fetch and manage only their own notifications and preferences. Intended for **client-side/browser** use.
 
 > ⚠️ **Security Warning:**  
-> If your `recipient_id` values are predictable (e.g., auto-incrementing integers), you **should not** expose `recipient`-scoped API keys on the frontend.  
+> If your `recipient_id` values are predictable (e.g., auto-incrementing integers), you **should not** expose `Recipient access` scoped API keys on the frontend.  
 > Instead, route requests through your own backend to ensure recipient access is properly scoped and protected.
 
 ### Authentication Errors
@@ -69,7 +51,7 @@ All responses follow this structure:
 }
 ```
 
-#### Error Object
+##### Error Object
 
 ```json
 {
@@ -77,6 +59,38 @@ All responses follow this structure:
     "description": "Detailed technical description",
     "property_path": "field_name",
     "invalid_value": "the value that caused the error"
+}
+```
+
+#### Example Success Response
+
+```json
+{
+    "status": "success",
+    "status_code": 200,
+    "message": "Direct notification sent successfully to recipient user_123.",
+    "data": {
+        "notification": {
+            "id": 42069,
+            "recipient_id": "user_123",
+            "payload": {
+                "title": "Welcome!",
+                "message": "Hey there! Thank you for joining Bodhveda."
+            },
+            "broadcast_id": null,
+            "target": {
+                "channel": "users",
+                "topic": "none",
+                "event": "sign_up_welcome"
+            },
+            "seen": false,
+            "read": false,
+            "opened": false,
+            "created_at": "2025-08-11T20:53:06.081316+05:30",
+            "updated_at": "2025-08-11T20:53:06.081316+05:30"
+        },
+        "broadcast": null
+    }
 }
 ```
 
@@ -98,20 +112,25 @@ All responses follow this structure:
 }
 ```
 
+## Response codes
+
+Bodhveda uses standard HTTP codes to indicate the success or failure of your requests.
+
+In general, `2xx` HTTP codes correspond to success, `4xx` codes are for user-related failures, and `5xx` codes are for infrastructure issues.
+
+| Status | Description                               |
+| ------ | ----------------------------------------- |
+| `2xx`  | Successful request.                       |
+| `400`  | Invalid input or malformed request        |
+| `401`  | The API Key is missing or invalid.        |
+| `403`  | The API key has insufficient permissions. |
+| `404`  | The resource was not found.               |
+| `409`  | The resource already exists.              |
+| `429`  | The rate limit was exceeded.              |
+| `5xx`  | Indicates an error with Bodhveda servers. |
+
 ## Rate Limiting
 
 -   The API enforces rate limits to prevent abuse.
 -   If you exceed the allowed rate, you will receive a `429 Too Many Requests` response.
 -   Standard limit: 100 requests per minute for a project (subject to change).
-
-## HTTP Status Codes
-
--   `200 OK` – Successful GET/PUT/PATCH/DELETE
--   `201 Created` – Successful POST (resource created)
--   `400 Bad Request` – Invalid input or malformed request
--   `401 Unauthorized` – Missing or invalid API key
--   `403 Forbidden` – Insufficient permissions
--   `404 Not Found` – Resource does not exist
--   `409 Conflict` – Resource already exists
--   `429 Too Many Requests` – Rate limit exceeded
--   `500 Internal Server Error` – Unexpected server error
